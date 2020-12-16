@@ -8,6 +8,11 @@ defmodule Homework.Transactions do
 
   alias Homework.Transactions.Transaction
 
+  def by_company_id(id) do
+    query = from(t in Transaction, where: t.company_id == ^id)
+    Repo.all(query)
+  end
+
   @doc """
   Returns the list of transactions.
 
@@ -37,6 +42,12 @@ defmodule Homework.Transactions do
   """
   def get_transaction!(id), do: Repo.get!(Transaction, id)
 
+  def get_transactions_by_company_id(id) do
+    query = from(t in Transaction,
+      where: t.company_id == ^id
+    )
+    Repo.all(query)
+  end
   @doc """
   Creates a transaction.
 

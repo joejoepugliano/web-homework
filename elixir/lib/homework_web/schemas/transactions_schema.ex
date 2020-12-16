@@ -14,6 +14,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     field(:debit, :boolean)
     field(:description, :string)
     field(:merchant_id, :id)
+    field(:company_id, :id)
     field(:inserted_at, :naive_datetime)
     field(:updated_at, :naive_datetime)
 
@@ -36,6 +37,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
       arg(:credit, non_null(:boolean))
       arg(:debit, non_null(:boolean))
       arg(:description, non_null(:string))
+      arg(:company_id, non_null(:id))
 
       resolve(&TransactionsResolver.create_transaction/3)
     end
@@ -50,6 +52,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
       arg(:credit, non_null(:boolean))
       arg(:debit, non_null(:boolean))
       arg(:description, non_null(:string))
+      arg(:company_id, non_null(:id))
 
       resolve(&TransactionsResolver.update_transaction/3)
     end
@@ -57,6 +60,7 @@ defmodule HomeworkWeb.Schemas.TransactionsSchema do
     @desc "delete an existing transaction"
     field :delete_transaction, :transaction do
       arg(:id, non_null(:id))
+      arg(:company_id, non_null(:id))
 
       resolve(&TransactionsResolver.delete_transaction/3)
     end

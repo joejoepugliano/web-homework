@@ -1,4 +1,5 @@
 defmodule HomeworkWeb.Resolvers.TransactionsResolver do
+  alias Homework.Companies
   alias Homework.Merchants
   alias Homework.Transactions
   alias Homework.Users
@@ -27,11 +28,13 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   @doc """
   Create a new transaction
   """
-  def create_transaction(_root, args, _info) do
-    case Transactions.create_transaction(args) do
-      {:ok, transaction} ->
-        {:ok, transaction}
+  def create_transaction(_root, %{company_id: company_id} = args, _info) do
+    with {:ok, transaction} <- Transactions.create_transaction(args),
+    {:ok, _company} <- update_company(company_id) do
+      {:ok, transaction}
 
+    else
+      {:company_error, error} -> {:error, "could not update company: #{inspect(error)}"}
       error ->
         {:error, "could not create transaction: #{inspect(error)}"}
     end
@@ -40,12 +43,13 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   @doc """
   Updates a transaction for an id with args specified.
   """
-  def update_transaction(_root, %{id: id} = args, _info) do
-    transaction = Transactions.get_transaction!(id)
-
-    case Transactions.update_transaction(transaction, args) do
-      {:ok, transaction} ->
-        {:ok, transaction}
+  def update_transaction(_root, %{id: id, company_id: company_id} = args, _info) do
+    with transaction <- Transactions.get_transaction!(id),
+    {:ok, transaction} <- Transactions.update_transaction(transaction, args),
+    {:ok, _company} <- update_company(company_id)|> IO.inspect(label: "COMPANY &&&") do
+      {:ok, transaction}
+    else
+      {:company_error, error} -> {:error, "could not update company: #{inspect(error)}"}
 
       error ->
         {:error, "could not update transaction: #{inspect(error)}"}
@@ -55,15 +59,25 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   @doc """
   Deletes a transaction for an id
   """
-  def delete_transaction(_root, %{id: id}, _info) do
-    transaction = Transactions.get_transaction!(id)
-
-    case Transactions.delete_transaction(transaction) do
-      {:ok, transaction} ->
-        {:ok, transaction}
+  def delete_transaction(_root, %{id: id, company_id: company_id}, _info) do
+    with transaction <- Transactions.get_transaction!(id),
+    {:ok, transaction} <- Transactions.delete_transaction(transaction),
+    {:ok, _company} <- update_company(company_id) do
+      {:ok, transaction}
+    else
+      {:company_error, error} -> {:error, "could not update company: #{inspect(error)}"}
 
       error ->
-        {:error, "could not update transaction: #{inspect(error)}"}
+        {:error, "could not delete transaction: #{inspect(error)}"}
+    end
+  end
+
+  defp update_company(company_id) do
+    with all_company_transactions <- Transactions.by_company_id(company_id) |> IO.inspect(label: "1111"),
+    {:ok, company} <- Companies.update(company_id, all_company_transactions) do
+      {:ok, company}
+    else
+      error -> {:company_error, error}
     end
   end
 end
