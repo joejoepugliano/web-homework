@@ -24,6 +24,14 @@ defmodule HomeworkWeb.Schema do
       resolve(&TransactionsResolver.transactions/3)
     end
 
+    @desc "Get all Transactions between min and max values"
+    field(:transactions_between_min_and_max, list_of(:transaction)) do
+      arg(:max, non_null(:integer))
+      arg(:min, non_null(:integer))
+
+      resolve(&TransactionsResolver.transactions_between_min_and_max/3)
+    end
+
     @desc "Get all Users"
     field(:users, list_of(:user)) do
       resolve(&UsersResolver.users/3)

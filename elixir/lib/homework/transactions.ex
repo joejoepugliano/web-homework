@@ -48,6 +48,15 @@ defmodule Homework.Transactions do
   end
 
   @doc """
+  Returns a list of transactions where the min <= amount <= max
+  """
+  def transactions_between_min_and_max(%{max: max, min: min}) do
+    query = from(t in Transaction, where: t.amount >= ^min and t.amount <= ^max)
+
+    Repo.all(query) |> IO.inspect()
+  end
+
+  @doc """
   Creates a transaction.
 
   ## Examples

@@ -44,4 +44,11 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   def delete_transaction(_root, args, _info) do
     Transactions.delete(args)
   end
+
+  @doc """
+  Returns a list of Transactions with amounts between min and max values inclusive
+  """
+  def transactions_between_min_and_max(_root, args, _info) do
+    {:ok, Transactions.transactions_between_min_and_max(args)}
+  end
 end

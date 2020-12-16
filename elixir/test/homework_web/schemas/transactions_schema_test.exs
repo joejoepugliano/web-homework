@@ -216,7 +216,10 @@ defmodule HomeworkWeb.TransactionsSchemaTest do
       Transactions.create_transaction(valid_snake_attrs)
       {:ok, transaction} = Transactions.create_transaction(valid_snake_attrs)
 
-      params = %{query: delete_mutation, variables: %{"id" => transaction.id, "companyId" => company.id}}
+      params = %{
+        query: delete_mutation,
+        variables: %{"id" => transaction.id, "companyId" => company.id}
+      }
 
       build_conn()
       |> put_req_header("content-type", "application/json")

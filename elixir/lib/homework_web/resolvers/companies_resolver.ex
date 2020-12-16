@@ -12,10 +12,16 @@ defmodule HomeworkWeb.Resolvers.CompaniesResolver do
     Companies.create(args)
   end
 
+  @doc """
+  Delete Company
+  """
   def delete(_root, args, _info) do
     Companies.delete(args)
   end
 
+  @doc """
+  Update a Company
+  """
   def update(_root, args, _info) do
     Companies.update(args)
   end
