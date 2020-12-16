@@ -17,25 +17,25 @@ defmodule HomeworkWeb.Schemas.CompaniesSchema do
     @desc "Create a new company"
     field :create_company, :company do
       arg(:name, non_null(:string))
-      arg(:credit_line, :integer)
+      arg(:credit_line, non_null(:integer))
 
       resolve(&CompaniesResolver.create/3)
     end
 
     @desc "Update a company"
     field :update_company, :company do
-        arg(:id, non_null(:id))
-        arg(:name, non_null(:string))
-        arg(:credit_line, non_null(:integer))
+      arg(:id, non_null(:id))
+      arg(:name, non_null(:string))
+      arg(:credit_line, non_null(:integer))
 
-        resolve(&CompaniesResolver.update/3)
+      resolve(&CompaniesResolver.update/3)
     end
 
     @desc "Delete a company"
     field :delete_company, :company do
-        arg(:id, non_null(:id))
+      arg(:id, non_null(:id))
 
-        resolve(&CompaniesResolver.delete/3)
+      resolve(&CompaniesResolver.delete/3)
     end
   end
 end

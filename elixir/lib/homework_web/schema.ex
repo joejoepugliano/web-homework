@@ -4,7 +4,12 @@ defmodule HomeworkWeb.Schema do
   """
   use Absinthe.Schema
 
-  alias HomeworkWeb.Resolvers.{CompaniesResolver, MerchantsResolver, TransactionsResolver, UsersResolver}
+  alias HomeworkWeb.Resolvers.{
+    CompaniesResolver,
+    MerchantsResolver,
+    TransactionsResolver,
+    UsersResolver
+  }
 
   import_types(HomeworkWeb.Schemas.Types)
 

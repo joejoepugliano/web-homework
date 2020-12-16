@@ -6,12 +6,8 @@ defmodule Homework.Transactions do
   import Ecto.Query, warn: false
   alias Homework.Repo
 
+  alias Homework.Companies
   alias Homework.Transactions.Transaction
-
-  def by_company_id(id) do
-    query = from(t in Transaction, where: t.company_id == ^id)
-    Repo.all(query)
-  end
 
   @doc """
   Returns the list of transactions.
@@ -43,24 +39,40 @@ defmodule Homework.Transactions do
   def get_transaction!(id), do: Repo.get!(Transaction, id)
 
   def get_transactions_by_company_id(id) do
-    query = from(t in Transaction,
-      where: t.company_id == ^id
-    )
+    query =
+      from(t in Transaction,
+        where: t.company_id == ^id
+      )
+
     Repo.all(query)
   end
+
   @doc """
   Creates a transaction.
 
   ## Examples
 
-      iex> create_transaction(%{field: value})
+      iex> create(%{field: value})
       {:ok, %Transaction{}}
 
-      iex> create_transaction(%{field: bad_value})
+      iex> create(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_transaction(attrs \\ %{}) do
+  def create(%{company_id: company_id} = args) do
+    with {:ok, transaction} <- create_transaction(args),
+         {:ok, _company} <- update_company(company_id) do
+      {:ok, transaction}
+    else
+      {:company_error, error} ->
+        {:error, "could not update company: #{inspect(error)}"}
+
+      error ->
+        {:error, "could not create transaction: #{inspect(error)}"}
+    end
+  end
+
+  def create_transaction(attrs) do
     %Transaction{}
     |> Transaction.changeset(attrs)
     |> Repo.insert()
@@ -71,13 +83,27 @@ defmodule Homework.Transactions do
 
   ## Examples
 
-      iex> update_transaction(transaction, %{field: new_value})
+      iex> update(transaction, %{field: new_value})
       {:ok, %Transaction{}}
 
-      iex> update_transaction(transaction, %{field: bad_value})
+      iex> update(transaction, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
+  def update(%{id: id, company_id: company_id} = args) do
+    with transaction <- get_transaction!(id),
+         {:ok, transaction} <- update_transaction(transaction, args),
+         {:ok, _company} <- update_company(company_id) do
+      {:ok, transaction}
+    else
+      {:company_error, error} ->
+        {:error, "could not update company: #{inspect(error)}"}
+
+      error ->
+        {:error, "could not update transaction: #{inspect(error)}"}
+    end
+  end
+
   def update_transaction(%Transaction{} = transaction, attrs) do
     transaction
     |> Transaction.changeset(attrs)
@@ -89,13 +115,27 @@ defmodule Homework.Transactions do
 
   ## Examples
 
-      iex> delete_transaction(transaction)
+      iex> delete(transaction)
       {:ok, %Transaction{}}
 
-      iex> delete_transaction(transaction)
+      iex> delete(transaction)
       {:error, %Ecto.Changeset{}}
 
   """
+  def delete(%{id: id, company_id: company_id}) do
+    with transaction <- get_transaction!(id),
+         {:ok, transaction} <- delete_transaction(transaction),
+         {:ok, _company} <- update_company(company_id) do
+      {:ok, transaction}
+    else
+      {:company_error, error} ->
+        {:error, "could not update company: #{inspect(error)}"}
+
+      error ->
+        {:error, "could not delete transaction: #{inspect(error)}"}
+    end
+  end
+
   def delete_transaction(%Transaction{} = transaction) do
     Repo.delete(transaction)
   end
@@ -111,5 +151,14 @@ defmodule Homework.Transactions do
   """
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
+  end
+
+  defp update_company(company_id) do
+    with all_company_transactions <- get_transactions_by_company_id(company_id),
+         {:ok, company} <- Companies.update(company_id, all_company_transactions) do
+      {:ok, company}
+    else
+      error -> {:company_error, error}
+    end
   end
 end
