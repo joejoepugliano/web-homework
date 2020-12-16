@@ -1,5 +1,16 @@
 # Homework
 
+
+# What I did
+
+- Write a new schema, queries, and mutations to add companies to the app
+- Seed the database
+- Write tests for the resolvers & mutations
+- getting back transactions with an amount between min and max arguments
+
+
+######
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
