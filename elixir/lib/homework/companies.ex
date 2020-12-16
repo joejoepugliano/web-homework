@@ -41,7 +41,7 @@ defmodule Homework.Companies do
 
   def update(id, transactions) do
     company = get!(id)
-    available_credit = determine_available_credit(company.credit_line, transactions)|> IO.inspect(label: "4444")
+    available_credit = determine_available_credit(company.credit_line, transactions)
 
     company
     |> Company.changeset(%{available_credit: available_credit})

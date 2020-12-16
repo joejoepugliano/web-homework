@@ -22,7 +22,7 @@ defmodule Homework.Transactions.Transaction do
   @doc false
   def changeset(transaction, attrs) do
     transaction
-    |> cast(attrs, [:amount, :company_id, :debit, :description, :merchant_id, :user_id])
+    |> cast(attrs, [:amount, :company_id, :credit, :debit, :description, :merchant_id, :user_id])
     |> foreign_key_constraint(:company_id)
     |> foreign_key_constraint(:merchant_id)
     |> foreign_key_constraint(:user_id)

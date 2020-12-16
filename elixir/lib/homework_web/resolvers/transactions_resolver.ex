@@ -46,7 +46,7 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   def update_transaction(_root, %{id: id, company_id: company_id} = args, _info) do
     with transaction <- Transactions.get_transaction!(id),
     {:ok, transaction} <- Transactions.update_transaction(transaction, args),
-    {:ok, _company} <- update_company(company_id)|> IO.inspect(label: "COMPANY &&&") do
+    {:ok, _company} <- update_company(company_id) do
       {:ok, transaction}
     else
       {:company_error, error} -> {:error, "could not update company: #{inspect(error)}"}
@@ -73,7 +73,7 @@ defmodule HomeworkWeb.Resolvers.TransactionsResolver do
   end
 
   defp update_company(company_id) do
-    with all_company_transactions <- Transactions.by_company_id(company_id) |> IO.inspect(label: "1111"),
+    with all_company_transactions <- Transactions.by_company_id(company_id),
     {:ok, company} <- Companies.update(company_id, all_company_transactions) do
       {:ok, company}
     else
